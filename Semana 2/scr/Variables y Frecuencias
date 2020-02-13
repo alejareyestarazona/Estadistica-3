@@ -1,0 +1,284 @@
+#Semana 2 - Variables y Frecuencias
+#Autor: María Alejandra Reyes Tarazona
+
+# Ver los set de datos para los paquetes cargado actualmente
+data()
+data(package = .packages(all.available = TRUE))
+
+# Cargar paquetes
+library(ape)
+library(permute)
+library(vegan)
+library(ade4)
+library(geiger)
+library(sp)
+# Cargar tablas de cada paquete
+data(carnivora)
+data(jackal)
+data(BCI)
+data(mite.env)
+data(atlas)
+data(carniherbi49)
+data(corvus)
+data(tortues)
+data(geospiza)
+
+#Ejercicio 1:¿Que clase de objeto es BIC? ¿Qué clase de objeto es geospiza? use la función *str* para obtener información sobre la estructura.
+
+class(BCI)
+class(geospiza)
+str(BCI)
+str(geospiza)
+help("geospiza")
+
+# Mirarla estructura del segundo objeto 
+
+geospiza$geospiza.data
+
+# Para extraer un objeto dentro de esta tabla solo hay que asignar la posición
+
+geospiza$geospiza.data[,1]
+
+#Ejercicio 2:¿Qué tipo de variable es tortues y qué clase? Abra el objeto *tortues* y mire ¿Qué tipo de variables tiene y qué clase son?, haga lo mismo con el objeto *mite.env* y revise ¿Qué tipo de variable es *shurb* y qué clase es? Recuerde siempre usar help para saber de donde vienen los datos.
+
+help("tortues")
+class(tortues)
+typeof(tortues)
+
+help("mite.env")
+class(mite.env)
+typeof(mite.env)
+
+#Podemos generar variables computadas a partir de variables medidas independientemente. Por ejemplo, mirar la proporción de sexos de un muestreo.
+# Semilla
+
+set.seed(1)
+#sexos
+sex <- c('F', 'M')
+sex
+
+# Inventemos una muestra con las mismas probabilidades de sacar un Macho o una Hembra
+
+pop1<-sample(x = sex, size = 50,replace = T,prob = c(0.5,0.5))
+pop1 
+
+# imaginemos que pop1 es real y queremos saber cuál es la razón de sexos en la muestra
+
+M<-length(which(pop1 == 'M'))
+M
+F <- length(which(pop1 == 'F'))
+F
+
+# la razón es
+paste(F,'/',M,sep = '')
+
+F/M
+
+#Qué pasaría si en el sitio encontráramos más hembras qué machos.
+
+sex <- c('F', 'M')
+sex
+
+# Inventemos una muestra con las mismas probabilidades de sacar un Macho o una Hembra
+
+pop2 <- sample(x = sex, size = 50,replace = T,prob = c(0.8,0.2))
+pop2
+
+# imaginemos que pop1 es real y queremos saber cuál es la razón de sexos en la muestra
+
+M <- length(which(pop1 == 'M'))
+M
+F <- length(which(pop1 == 'F'))
+F
+
+# la razón es
+paste(F,'/',M,sep = '')
+
+F/M
+
+#Ejercicio 3: Usando el data.frame *tortues* calcule la proporción de hembras y machos de la muestra
+
+Machostortues <- length (which (tortues == 'M'))
+Machostortues
+Hembrastortues <- length (which (tortues == 'F'))
+Hembrastortues
+paste(Hembrastortues, '/', Machostortues, sep = '')
+Hembrastortues / Machostortues
+#También podemos generar la proporción entre dos medidas, por ejemplo el ancho y el largo para obtener una variable derivada que represente la forma.
+
+# Imaginemos que tomamos medidas de cráneos de lagarto
+
+Ancho<-rnorm(n = 32,mean = 10,sd = 1)
+Ancho
+
+Largo <- rnorm(n = 32,mean = 15,sd = 1)
+Largo
+
+# Construimos la tabla con medidas imaginarias
+medidas<-cbind(Ancho, Largo)
+medidas
+
+Tabla_medidas <- as.data.frame(cbind(paste('spp',1:32,sep = '_'),medidas))
+
+# tabla sin colnames
+
+Tabla_medidas
+
+# se le asignan nombres a las columnas
+
+colnames(Tabla_medidas) <- c('Individuos', 'Ancho','Largo')
+Tabla_medidas
+
+# Relación ancho/largo
+
+prp <- Ancho/Largo
+prp 
+Tabla_medidas_prp <- cbind.data.frame(Tabla_medidas, prp)
+Tabla_medidas_prp 
+
+#Ejercicio 4:Usando el data.frame *tortues* calcule la proporción entre el ancho y el largo del caparazón, genere una tabla con la información de *tortues* y la nueva variable derivada.
+
+anchocap=rnorm(tortues$long)
+anchocap
+
+largocap=rnorm(tortues$larg)
+largocap
+medidasdetortues<-cbind(anchocap,largocap)
+medidasdetortues
+tabla_tortues <- as.data.frame (cbind (paste ('spp', 1: 48, sep = '_'), medidasdetortues))
+medidasdetortues
+tabla_tortues
+prptortues<-anchocap/largocap
+prptortues 
+tablademedidas<- cbind.data.frame(tabla_tortues, prptortues)
+tablademedidas 
+
+# Tablas
+freq<-table(mite.env$Substrate)
+freq
+# Fracción
+prop.table(freq)
+
+# Las proporciones pueden  ser visualizadas usando la función *pie*
+pie(prop.table(freq))
+
+#Ejercicio 5:¿Cuántas especies de * Corvus * fueron muestreadas en la región Paleártica-Africana? 
+#Utilice el data.frame del género * Corvus *. ¿Qué porcentaje de * Corvus * muestreados habitan zonas abiertas
+
+
+help(corvus)
+
+frecuencia <- table (corvus $ phylog)
+frecuencia
+
+prop.table (frecuencia)
+
+pie (prop.table (frecuencia))
+
+frecuenciazona<-table(corvus $ habitat)
+frecuenciazona
+
+#La distribución de frecuencias
+# freq era la tabla de frecuencias construida anteriormente
+freq
+
+mite.env$Substrate
+
+# Gráficar las frecuencias de cada sustrato
+plot(freq)
+
+#Ejercicio 6:¿Cómo luce el gráfico de frecuencias para los tipos de hábitat del género *Corvus*?
+
+freqcorvus<-table(corvus$habitat)
+freqcorvus
+plot(freqcorvus)
+
+# Sumar las ocurrencias de cada especie
+atlas$birds
+
+xsp<- apply(atlas$birds,2,sum)
+
+# Preguntar cuál es el mínimo 
+min(xsp)
+which.min(xsp)
+xsp[which.min(xsp)]
+
+# podríamos generar vectores
+
+min(xsp)
+x <- which.min(xsp)
+xsp[x]
+
+#Ejercicio 7:encuentre el máximo, así como lo hizo para el mínimo. Preguntar cuál es el  el máximo
+
+max(xsp)
+which.max(xsp)
+xsp[which.max(xsp)]
+
+# poodemos graficar la frecuencia de cada especies
+
+plot(as.table(xsp))
+
+# Longitud de las tortugas
+tortues$long
+
+# no tendría sentido, debemos organizar en rangos
+table(tortues$long)
+
+# Preguntar cuál es el mínimo 
+min(tortues$long)
+
+# Preguntar cuál es el máximo
+max(tortues$long)
+
+# La función rangos nos permite ver directamente el rango
+
+range(tortues$long)
+# genere las cajas
+
+bins <- seq(92.5,182.5, 10)
+
+# Agrupe los datos en las cajas
+
+datos<- cut(tortues$long,bins)
+
+# genere la tabla de frecuencias
+freq_long<-table(datos)
+
+# Usamos transfrom para generar un data.frame de frecuencias
+transform(freq_long)
+
+# Podemos usarlo para adicionar más información a cada rango. Freq es una variable interna 
+
+# generada a partir de transform(freq_long)
+
+transform(freq_long, Relativ= prop.table(Freq), Acum= cumsum(Freq))
+
+# Histograma a partir de datos crudos
+
+hist(tortues$long)
+
+# Histograma definiendo las cajas 
+
+hist(tortues$long, breaks = bins, main = 'Longitudes de caparazón')
+
+
+#Ejercicio 8:Repita el ejercicio para las variables continuas de tamaño de pico y tamaño del ala en el género *Corvus*. Busque cómo cambiar colores, ejes y algunas propiedades que le permitan mejorar el diseño del histograma. Invente unos datos de medidas, como se hizo en el caso de los cráneos, y genere todo el ejercicio hasta el histograma. Busque otro tipo de distribuciones para generar las variables [ejemplo][3]. Busque en qué casos sirve cada distribución o para qué se usan.
+
+corvus$wing
+table(corvus$wing)
+min(corvus$wing)
+max(corvus$wing)
+rango(corvus$wing)
+
+corvusseq <- seq (225.5, 475.5, 10)
+
+datos_Corvus <- cut (corvus $ wing, corvusseq)
+
+freqala <-table (datos_Corvus)
+
+transform(freqala)
+
+hist (corvus $ wing)
+
+hist (corvus $ wing, breaks = corvusseq, main = 'Tamaño del ala')
